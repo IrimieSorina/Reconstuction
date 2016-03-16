@@ -39,8 +39,6 @@ std::vector<std::vector<cv::Point>> ExtractContours::FindContours(cv::Mat image)
 			contoursResult.push_back(contours[i]);
 		}
 	}
-
-	//cv::findContours(imageBinarization.clone(), contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 	return contoursResult;
 }
 
@@ -52,7 +50,7 @@ std::vector<ShapeDescriptor> ExtractContours::GetContours(cv::Mat image, cv::Mat
 
 	Utils utils;
 	centers = utils.FindCenters(image);
-	std::vector<ShapeDescriptor> sd;
+	std::vector<ShapeDescriptor> allDistance;
 	for (int i = 0; i < contours.size(); i++)
 	{
 		/*
@@ -62,7 +60,7 @@ std::vector<ShapeDescriptor> ExtractContours::GetContours(cv::Mat image, cv::Mat
 		rr.points(pts);
 		for (int j = 0; j < 3; j++)
 		{
-			cv::line(result, pts[j], pts[j + 1], cv::Scalar(0, 0, 255), 2);
+			cv::line(result, pts[j], pts[j + 1], cv::Scalar(0, 0, 255), 2
 		}
 		cv::line(result, pts[3], pts[0], cv::Scalar(0, 0, 255), 2);
 		*/
@@ -77,12 +75,31 @@ std::vector<ShapeDescriptor> ExtractContours::GetContours(cv::Mat image, cv::Mat
 		cv::drawContours(result, contours, i, cv::Scalar(255, 255, 255));
 		circle(result, centers[i], 4, cv::Scalar(255, 255, 255), -1);
 
-		ShapeDescriptor s;
-		s.ComputeDescriptorBruteForce(contours[i], centers[i]);
-		sd.push_back(s);
+		ShapeDescriptor distance;
+		distance.ComputeDescriptorBruteForce(contours[i], centers[i]);
+		allDistance.push_back(distance);
 	}
 
-	return sd;
+	return allDistance;
+}
+
+void ExtractContours::Test(std::vector<ShapeDescriptor> des)
+{
+	ShapeDescriptor s;
+	Indexes index;
+	std::vector<double> v;
+	for (auto i = 0; i < des.size(); i++)
+	{
+		for (auto j = 0; j < des.size(); j++)
+		{
+			if (i != j)
+			{
+				//index = s.CompareTwoDescriptors(des[i], des[j]);
+				index = s.CompareTwoDescriptors(des[i], des[j]);
+			}
+		}
+	}
+
 }
 
 cv::Mat ExtractContours::Compute(cv::Mat image)
@@ -93,6 +110,6 @@ cv::Mat ExtractContours::Compute(cv::Mat image)
 	cv::erode(imageBinarization, imageBinarization, cv::Mat());
 	cv::Mat imageContours(image.size(), CV_8UC3, cv::Scalar(0, 0, 0));
 	std::vector<ShapeDescriptor> sd = GetContours(imageBinarization, imageContours);
-
+	Test(sd);
 	return imageContours;
 }

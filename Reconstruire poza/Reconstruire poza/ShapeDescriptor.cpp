@@ -10,18 +10,157 @@ ShapeDescriptor::~ShapeDescriptor()
 {
 }
 
+double ShapeDescriptor::CalculateMaxim(ShapeDescriptor a)
+{
+	double maxim = 0;
+	for (auto i = 0; i < a.length; i++)
+	{
+		if (a._descriptor[i] > maxim)
+			maxim = a._descriptor[i];
+	}
+	return maxim;
+}
+
+std::vector<ShapeDescriptor> ShapeDescriptor::Normalize(ShapeDescriptor a, ShapeDescriptor b)
+{
+	double normalize = 0;
+	double firstMax = CalculateMaxim(a);
+	double secondMax = CalculateMaxim(b);
+	std::vector<ShapeDescriptor> v;
+	if (firstMax > secondMax)
+	{
+		normalize = firstMax - secondMax;
+		for (auto i = 0; i < b.length; i++)
+		{
+			b._descriptor[i] = b._descriptor[i] + normalize;
+		}
+	}
+	else if (secondMax > firstMax)
+	{
+		normalize = secondMax - firstMax;
+		for (auto i = 0; i < a.length; i++)
+		{
+			a._descriptor[i] = a._descriptor[i] + normalize;
+		}	
+	}
+
+	v.push_back(a);
+	v.push_back(b);
+	return v;
+}
+
+Indexes ShapeDescriptor::CompareTwoDescriptors(ShapeDescriptor a, ShapeDescriptor b)
+{
+	std::vector<ShapeDescriptor> shape;
+	ShapeDescriptor s;
+	shape = s.Normalize(a, b);
+	std::vector<std::vector<double>> vector;
+	int indexVector = 0;
+	for (auto i = 0; i < shape[0].length; i++)//237
+	{
+		for (auto j = 0; j < shape[1].length; j++)//2400
+		{
+			int nr = 0;
+			if ((int)shape[0]._descriptor[i] == (int)shape[1]._descriptor[j])
+			{
+				indexVector++;
+				vector.resize(indexVector);
+			}
+			while ((int)shape[0]._descriptor[i] == (int)shape[1]._descriptor[j])
+			{
+				nr++;
+				if (i != shape[0].length-1)
+					i++;
+				else
+					break;
+				if (j != shape[1].length -1)
+					j++;
+				else
+					break;
+				vector[indexVector - 1].push_back(shape[0]._descriptor[i]);
+			}
+			if (nr != 0 && nr < 10)
+			{
+				for (auto k = 0; k < nr; k++)
+				{
+					i--; j--;
+				}
+				indexVector--;
+				vector[indexVector].clear();
+			}
+		}
+	}
+
+	int max = vector[0].size();
+	for (auto i = 0; i < vector.size(); i++)
+	{
+		if (max < vector[i].size())
+		{
+			max = vector[i].size();
+		}
+	}
+
+	Indexes index;
+	index.first.x = vector[max][0];
+	index.second.x = vector[max][vector[max].size()-1];
+	return index;
+}
+
+//Indexes ShapeDescriptor::CompareTwoDescriptors(ShapeDescriptor a, ShapeDescriptor b)
+//{
+//	std::vector<ShapeDescriptor> shape;
+//	ShapeDescriptor s;
+//	shape = s.Normalize(a, b);
+//	std::vector<std::vector<double>> vector(shape[0].length*shape[1].length);
+//	Indexes ind;
+//	int indiceVector = -1;
+//	for (auto i = 0; i < shape[0].length; i++)
+//	{
+//		for (auto j = 0; j < shape[1].length; j++)
+//		{
+//			int ii = i, jj = j;
+//			if ((int)shape[0]._descriptor[i] == (int)shape[1]._descriptor[j])
+//			{
+//				indiceVector++;
+//				ind.first.x = shape[0]._descriptor[i];
+//			}
+//
+//			while ((int)shape[0]._descriptor[i] == (int)shape[1]._descriptor[j])
+//			{
+//				
+//				vector[indiceVector].push_back(shape[0]._descriptor[j]);
+//				if (i != shape[0].length && j != shape[1].length)
+//				{
+//					i++;
+//					j++;
+//				}
+//				else break;
+//				ind.second.x = shape[0]._descriptor[i];
+//			}
+//			if (indiceVector != -1 && vector[indiceVector].size() < 20)
+//			{
+//				vector.erase(vector.begin() + indiceVector);
+//				indiceVector--;
+//			}
+//			if (i<shape[0].length && j<shape[1].length)
+//			i = ii; j = jj;
+//		}
+//	}
+//	return ind;
+//}
+
 void ShapeDescriptor::ComputeDescriptorBruteForce(const std::vector<cv::Point> &contour, const cv::Point &center)
 {
 	_descriptor.clear();
 	for (auto i = 0; i < contour.size(); i++)
 	{
 		_descriptor.push_back(Utils::GetDistance(center, contour[i]));
-		std::cout << _descriptor[i] << std::endl;
+		//std::cout << _descriptor[i] << std::endl;
 	}
-
+	length = contour.size();
 }
 
-//
+
 //void ShapeDescriptor::MatchShapes(cv::Mat image)
 //{
 //	std::vector<std::vector<cv::Point>> contours;

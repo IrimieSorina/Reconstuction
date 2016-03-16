@@ -1,6 +1,7 @@
 #include "Utils.h"
 #include "ExtractContours.h"
 #include "Histogram.h"
+//#include "ShapeDescriptor.h"
 using namespace cv;
 using namespace std;
 
@@ -12,10 +13,37 @@ Utils::Utils()
 Utils::~Utils()
 {
 }
+
+//Indexes Utils::CompareTwoDescriptors(ShapeDescriptor a, ShapeDescriptor b)
+//{
+//	ShapeDescriptor shape;
+//	shape.Normalize(a, b);
+//	std::vector<double> vector;
+//	Indexes ind;
+//	for (auto i = 0; i < a.length; i++)
+//	{
+//		for (auto j = 0; j < b.length; j++)
+//		{
+//			if (a._descriptor[i] == b._descriptor[j]) 
+//				ind.first.x = a._descriptor[i];
+//
+//			while (a._descriptor[i] == b._descriptor[j])
+//			{
+//				vector.push_back[a._descriptor[j]];
+//				i++;
+//				j++;
+//				ind.second.x = a._descriptor[i];
+//			}
+//		}
+//	}
+//	return ind;
+//}
+
 double Utils::GetDistance(const cv::Point &a, const cv::Point &b)
 {
 	return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
 }
+
 cv::Mat Utils::FindLines(const cv::Mat& image)
 {
 	vector<Vec4i> lines;

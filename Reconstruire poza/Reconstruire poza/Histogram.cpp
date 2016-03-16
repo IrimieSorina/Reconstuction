@@ -65,7 +65,7 @@ int Histogram::Thresh(const cv::Mat& image)
 	hist = ComputeHistogram(image);
 	double maxv, minv;
 	cv::Point maxloc, minloc;
-	cv::minMaxLoc(hist, &minv, &maxv,&minloc, &maxloc);
+	cv::minMaxLoc(hist, &minv, &maxv, &minloc, &maxloc);
 	double prag = 0.02 * maxv;
 	int thresh = 0;
 	for (int i = maxloc.x+1; i < 255; i++)
