@@ -95,17 +95,19 @@ Indexes ShapeDescriptor::CompareTwoDescriptors(ShapeDescriptor a, ShapeDescripto
 	}
 
 	int max = vector[0].size();
+	int maxLoc = 0;
 	for (auto i = 0; i < vector.size(); i++)
 	{
 		if (max < vector[i].size())
 		{
 			max = vector[i].size();
+			maxLoc = i;
 		}
 	}
 
 	Indexes index;
-	index.first.x = vector[max][0];
-	index.second.x = vector[max][vector[max].size()-1];
+	index.first.x = vector[maxLoc][0];
+	index.second.x = vector[maxLoc][vector[maxLoc].size() - 1];
 	return index;
 }
 
