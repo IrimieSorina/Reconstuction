@@ -60,6 +60,7 @@ Indexes ShapeDescriptor::CompareTwoDescriptors(ShapeDescriptor a, ShapeDescripto
 	{
 		for (auto j = 0; j < shape[1].length; j++)//2400
 		{
+			std::cout << i <<"+"<<j << std::endl;
 			int nr = 0;
 			if ((int)shape[0]._descriptor[i] == (int)shape[1]._descriptor[j])
 			{
@@ -68,15 +69,17 @@ Indexes ShapeDescriptor::CompareTwoDescriptors(ShapeDescriptor a, ShapeDescripto
 			}
 			while ((int)shape[0]._descriptor[i] == (int)shape[1]._descriptor[j])
 			{
-				nr++;
-				if (i != shape[0].length-1)
-					i++;
+				
+				if (i != shape[0].length - 1 && j != shape[1].length - 1)
+				{
+					nr++; i++; j++;
+				}
 				else
 					break;
-				if (j != shape[1].length -1)
-					j++;
-				else
-					break;
+				//if (j != shape[1].length -1)
+					//j++;
+				//else
+					//break;
 				vector[indexVector - 1].push_back(shape[0]._descriptor[i]);
 			}
 			if (nr != 0 && nr < 10)
