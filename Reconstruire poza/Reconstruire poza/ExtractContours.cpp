@@ -77,29 +77,37 @@ std::vector<ShapeDescriptor> ExtractContours::GetContours(cv::Mat image, cv::Mat
 
 		ShapeDescriptor distance;
 		distance.ComputeDescriptorBruteForce(contours[i], centers[i]);
+		distance.Normalize(distance);
+		distance._contour = contours[i];
 		allDistance.push_back(distance);
 	}
 
 	return allDistance;
 }
 
-void ExtractContours::Test(std::vector<ShapeDescriptor> des)
+vector<Indexes> ExtractContours::Test(const std::vector<ShapeDescriptor> &des, cv::Mat &image)
 {
 	ShapeDescriptor s;
-	Indexes index;
-	std::vector<double> v;
-	for (auto i = 0; i < des.size(); i++)
+	std::vector<Indexes> indexes;
+	
+	for (auto i = 0; i < des.size()-1; i++)
 	{
-		for (auto j = 0; j < des.size(); j++)
+		for (auto j = i+1; j < des.size(); j++)
 		{
-			if (i != j)
+			Indexes mystruct = s.CompareTwoDescriptors(des[i], des[j]);
+			indexes.push_back(mystruct);
+			cv::Scalar color(rand() & 255, rand() & 255, rand() & 255);
+			for (auto t = mystruct.first.x; t < mystruct.first.y; t++)
 			{
-				//index = s.CompareTwoDescriptors(des[i], des[j]);
-				index = s.CompareTwoDescriptors(des[i], des[j]);
+				cv::circle(image, des[i]._contour[t], 1, color, 2);
+			}
+			for (auto t = mystruct.second.x; t < mystruct.second.y; t++)
+			{
+				cv::circle(image, des[j]._contour[t], 1, color, 2);
 			}
 		}
 	}
-
+	return indexes;
 }
 
 cv::Mat ExtractContours::Compute(cv::Mat image)
@@ -110,6 +118,6 @@ cv::Mat ExtractContours::Compute(cv::Mat image)
 	cv::erode(imageBinarization, imageBinarization, cv::Mat());
 	cv::Mat imageContours(image.size(), CV_8UC3, cv::Scalar(0, 0, 0));
 	std::vector<ShapeDescriptor> sd = GetContours(imageBinarization, imageContours);
-	Test(sd);
+	vector<Indexes> indexes =Test(sd, imageContours);
 	return imageContours;
 }

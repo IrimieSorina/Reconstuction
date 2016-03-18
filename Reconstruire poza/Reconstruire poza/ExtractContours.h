@@ -10,7 +10,7 @@ public:
 	std::vector<ShapeDescriptor> GetContours(cv::Mat image, cv::Mat result);
 	cv::Mat Compute(cv::Mat image);
 	cv::Mat Binarization(cv::Mat image, cv::Mat result);
-	void Test(std::vector<ShapeDescriptor> des);
+	vector<Indexes> Test(const std::vector<ShapeDescriptor> &des, cv::Mat &drawingimage);
 	
 };
 
